@@ -3,7 +3,7 @@ import pyscipopt as pcp
 # Iniciando modelagem
 model = pcp.Model()
 
-# Cria vetor bidimensional que contém x1 e x2, variáveis binárias
+# Cria vetor bidimensional que contém x1 e x2, variáveis binárias (vtype="B")
 x = []
 for i in range(0,2):
     x.append(model.addVar(name=f"x{i+1}", vtype="B"))
