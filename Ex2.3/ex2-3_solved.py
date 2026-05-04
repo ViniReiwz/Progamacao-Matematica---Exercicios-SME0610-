@@ -19,6 +19,6 @@ model.hideOutput()
 model.optimize()
 
 # Exibe o resultado final e os valores de x1 e x2
-print(f'{model.getObjVal():.2f}')
-print(f'{model.getVal(x1):.2f}')
-print(f'{model.getVal(x2):.1f}')
+print(f'{round(model.getObjVal())}')
+print(f'{round(model.getVal(x1))}')
+print(f'{round(model.getVal(x2))}')

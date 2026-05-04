@@ -3,9 +3,9 @@ import pyscipopt as pcp
 # Instancia um objeto para a modelagem
 model = pcp.Model()
 
-# Adiciona as variáveis da modelagem, x1 e x2, no caso, variáveis inteiras
-x1 = model.addVar(name="x1", vtype="I", ub=2) # ub == upper bound, ou seja, o maior valor de x1 é 2 (já que x1 <= 2 e x1 é inteiro)
-x2 = model.addVar(name="x2", vtype="I", ub=3) # ub == upper bound, ou seja, o maior valor de x1 é 3 (já que x2 <= 3 e x2 é inteiro)
+# Adiciona as variáveis da modelagem, x1 e x2, no caso, variáveis contínuas
+x1 = model.addVar(name="x1", vtype="C", ub=2) # ub == upper bound, ou seja, o maior valor de x1 é 2 (já que x1 <= 2 e x1 é inteiro)
+x2 = model.addVar(name="x2", vtype="C", ub=3) # ub == upper bound, ou seja, o maior valor de x1 é 3 (já que x2 <= 3 e x2 é inteiro)
 
 # PS: O lb (lower bound) é definido por padrão como 0, dessa forma, temos as restrições:    
 # 0 <= x1 <= 2
