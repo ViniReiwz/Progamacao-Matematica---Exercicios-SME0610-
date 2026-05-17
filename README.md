@@ -70,6 +70,18 @@ Com um único método
 ```
 O problema é otimizado de acordo com as restrições, variáveis e objetivos discutidos anteriormente.
 
+# Status
+Após utilizar `model.optimize()`, podemos utilizar de
+```python
+    model.getStatus()
+```
+para recuperar o status da otimização do problema (em formato de _string_). Alguns exemplos são:
+
+> 'optimized', quando o problema foi otimizado à um valor finito
+> 'unbounded', quando a solução encontrada tende ao infinito
+> 'infeasible', quando a solução é impossível
+
+Vale lembrar que esses status vão depender das suas variáveis, restrições e dados de entrada (quando houver)
 
 # Adicional:
 
@@ -78,7 +90,7 @@ O problema é otimizado de acordo com as restrições, variáveis e objetivos di
 ```
 
 ```python
-    model.getObjVal(x1) # Retorna o valor ótimo da função objetivo
+    model.getObjVal() # Retorna o valor ótimo da função objetivo
 ```
 
 ```python
