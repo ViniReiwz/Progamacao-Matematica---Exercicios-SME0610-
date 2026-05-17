@@ -78,7 +78,9 @@ Após utilizar `model.optimize()`, podemos utilizar de
 para recuperar o status da otimização do problema (em formato de _string_). Alguns exemplos são:
 
 > 'optimized', quando o problema foi otimizado à um valor finito
+
 > 'unbounded', quando a solução encontrada tende ao infinito
+
 > 'infeasible', quando a solução é impossível
 
 Vale lembrar que esses status vão depender das suas variáveis, restrições e dados de entrada (quando houver)
