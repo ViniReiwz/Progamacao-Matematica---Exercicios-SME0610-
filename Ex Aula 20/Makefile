@@ -1,5 +1,5 @@
 all:
-	gcc ./centros_distr.c -o centros_distr
+	gcc ./centros_distr.c -I ./ -o centros_distr
 # 	make run
 
 run:
