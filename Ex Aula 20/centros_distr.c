@@ -40,7 +40,7 @@ SOLUTION greedy_optimize(const CD cds[MAX_CDS], const CITY cities[MAX_CITIES], c
         for(int j = 0; j < MAX_CDS; j++)
         {
             // Custo fixo de instalar o cd j por cidade (custo total / número de cidades)
-            int fix_cost = cds[j].fix_cost/MAX_CDS;
+            int fix_cost = cds[j].fix_cost/MAX_CITIES;
 
             // Verifica se há capacidade restante no CD
             if(remaining_cap[j] >= cities[i].demand)
