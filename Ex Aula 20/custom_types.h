@@ -11,7 +11,6 @@
         int id;         // Identificação única de cada CD
         int fix_cost;   // Custo fixo de instalação do CD
         int cap;        // Capacidade do CD
-        int builded;
     }CD;
 
     // Tipo que representa uma cidade

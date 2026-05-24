@@ -6,14 +6,14 @@
     Encontrando uma solução a partir de algoritmos gulosos.
     Esta função busca encontrar a melhor solução local, encontrando o CD mais barato de se construir para cada cidade, que consegue atender à sua demanda.
     params:
-        CD* cds => Vetor do tipo CD, que representa os centros de distribuição disponíveis;
-        CITY* cities => Vetor do tipo CITY, que representa as cidades à serem atendidas
-        int** costs => Matriz de custos (CD_i para cidade_j)
+        CD cds[MAX_CDS] => Vetor do tipo CD, que representa os centros de distribuição disponíveis;
+        CITY cities[MAX_CITIES] => Vetor do tipo CITY, que representa as cidades à serem atendidas
+        const int costs[MAX_CDS][MAX_CITIES] => Matriz de custos (CD_i para cidade_j)
     return:
         SOLUTION sol => Solução final utilizando os ótimos locais.
 
 */
-SOLUTION greedy_optimize(CD* cds, CITY* cities, int costs[MAX_CDS][MAX_CITIES])
+SOLUTION greedy_optimize(const CD cds[MAX_CDS], const CITY cities[MAX_CITIES], const int costs[MAX_CDS][MAX_CITIES])
 {
     SOLUTION sol;
 
@@ -39,11 +39,14 @@ SOLUTION greedy_optimize(CD* cds, CITY* cities, int costs[MAX_CDS][MAX_CITIES])
         // Percorre todos os CDs
         for(int j = 0; j < MAX_CDS; j++)
         {
+            // Custo fixo de instalar o cd j por cidade (custo total / número de cidades)
+            int fix_cost = cds[j].fix_cost/MAX_CDS;
+
             // Verifica se há capacidade restante no CD
             if(remaining_cap[j] >= cities[i].demand)
             {
-                // Taxa de logística entre cd_j e cidade_i + custo de construção do cd_j
-                int curr_cost = costs[j][i] + cds[j].fix_cost;
+                // Taxa de logística entre cd_j e cidade_i + custo de construção do cd_j (custo para cada cidade)
+                int curr_cost = costs[j][i] + fix_cost;
                 
                 // Verifica o custo do CD 'j' ao atender a cidade 'i', atribuindo o melhor valor (minimizando)
                 // ou seja, encontra o ótimo local para cada cidade.
@@ -64,20 +67,122 @@ SOLUTION greedy_optimize(CD* cds, CITY* cities, int costs[MAX_CDS][MAX_CITIES])
         // Decrementa a capacidade do CD de acordo com a cidade que passou à servir
         remaining_cap[best_cd_idx] -= cities[i].demand;
 
-        // Aumenta o custo total de acordo com a tabela de custos
-        sol.total_cost += costs[best_cd_idx][i];
-
-        // Caso ainda não tenha sido feito, atribui o CD como construindo e incrementa o custo fixo
-        // de construção no custo total
-        if(cds[best_cd_idx].builded == 0)
-        {
-            cds[best_cd_idx].builded = 1;
-            sol.total_cost += cds[best_cd_idx].fix_cost;
-        }
-
     }
 
+    sol.total_cost = calculate_cost(sol,cds,costs);
+
     return sol;
+}
+
+/*
+    Função que calcula o custo total de uma solução.
+    params:
+        SOLUTION sol => Solução encontrada, a qual deseja-se calcular o custo;
+        const CD cds[MAX_CDS] => Vetor contendo as informações dos centros de distribuição;
+        const int costs[MAX_CDS][MAX_CITIES] => Matriz de custos de transporte entre o cd i e a cidade j (costs[i][j]).
+    return:
+        int cost => Custo total calculado.
+*/
+int calculate_cost(SOLUTION sol, const CD cds[MAX_CDS], const int costs[MAX_CDS][MAX_CITIES])
+{
+    // Inicializa as variáveis de custo e o vetor de cds utilizados
+    int cost = 0;
+    int used_cds[MAX_CDS] = {0};
+
+    // Percorre todas as cidades
+    for(int j = 0; j < MAX_CITIES; j++)
+    {
+        // Encontra o cd que serve à cidade j;
+        int cd_idx = sol.served_cities[j];
+
+        // Incrementa o custo
+        cost += costs[cd_idx][j];
+
+        // Incrementa o custo de construção do cd (única vez)
+        if(!used_cds[cd_idx])
+        {
+            cost += cds[cd_idx].fix_cost;
+            used_cds[cd_idx] = 1;
+        }
+    }
+    return cost;
+}
+
+/*
+    Faz uma busca local para aprimorar a solução gulosa, explorando soluções vizinhas em busca de uma melhor otimização.
+    params:
+        SOLUTION old_sol => Solução gulosa;
+        const CD cds[MAX_CDS] => Centros de dsitribuição;
+        const CITY cities[MAX_CITIES] => cidades a serem atendidas
+        const int costs[MAX_CDS][MAX_CITIES] => Matriz de custos
+    return:
+        SOLUTION new_sol => Retorna solução aprimorada pela busca local.
+*/
+SOLUTION local_search(SOLUTION old_sol, const CD cds[MAX_CDS], const CITY cities[MAX_CITIES], const int costs[MAX_CDS][MAX_CITIES])
+{
+    // Instancia nova solução
+    SOLUTION new_sol = old_sol;
+    
+    // Variável auxiliar, que indica se há possível melhora ainda na solução encontrada
+    int can_improve = 1;
+
+    // Atua enquanto houver possibilidade de melhora
+    while(can_improve)
+    {
+        // Seta para 0, para sair do loop caso não encontre melhor solução
+        can_improve = 0;
+
+        // Percorre todas as cidades
+        for(int i = 0; i < MAX_CITIES; i++)
+        {
+            // Indíce do CD que serve a i-ésima cidade na solução atual
+            int cur_cd = old_sol.served_cities[i];
+
+            // Percorre todas as cidades
+            for(int new_cd = 0; new_cd < MAX_CDS; new_cd++)
+            {
+                // Pula a solução atual
+                if(new_cd!=cur_cd)
+                {
+                    // Variável auxiliar, inicializada em 0, que indica quanto da capacidade do x-ésimo CD foi utilizado
+                    int used_cap[MAX_CDS] = {0};
+
+                    // Atribui o quanto das capacidades estão sendo usadas na solução atual, para cada CD que atende à cidade x
+                    for(int x = 0; x <MAX_CITIES; x++)
+                    {
+                        used_cap[old_sol.served_cities[x]] += cities[x].demand;
+                    }
+                    
+                    // Retira o uso da capacidade do CD atual (remove a cidade da lista de antendidas)
+                    used_cap[cur_cd] -= cities[i].demand;
+                    
+                    // Verifica se o novo CD suporta a demanda da cidade recém retirada
+                    if(!(used_cap[new_cd] + cities[i].demand > cds[new_cd].cap))
+                    {
+                        // Atribui nova solução
+                        new_sol = old_sol;
+                        
+                        // Faz com que a iésima cidade seja atendida por um novo CD
+                        new_sol.served_cities[i] = new_cd;
+    
+                        // Recalcula o custo total da nova solução
+                        new_sol.total_cost = calculate_cost(new_sol,cds,costs);
+                        
+                        // Caso a nova solução seja melhor que a anterior, indica possibilidade de melhora e busca novo vizinho baseado na nova solução encontrada (faz old_sol = new_sol)
+                        if(new_sol.total_cost < old_sol.total_cost)
+                        {
+                            can_improve = 1;
+                            old_sol = new_sol;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Retorna a melhor solução encontrada
+    new_sol = old_sol;
+    return new_sol;
 }
 
 
@@ -99,7 +204,9 @@ int main()
     cds[3].cap = 70;
     
     for(int i = 0; i < MAX_CDS; i++)
-    {cds[i].id = i+1; cds[i].builded = 0;}
+    {
+        cds[i].id = i+1;
+    }
 // ------------------------------------------------------------------------------------------------------------
 
 // Cria as cidades do problema e atribui os valores necessários -----------------------------------------------
@@ -127,11 +234,26 @@ int main()
     };
 // ------------------------------------------------------------------------------------------------------------
 
+// Exibição dos resultados: -----------------------------------------------------------------------------------
     SOLUTION solution = greedy_optimize(cds, cities, costs);
-    puts("Solução Final:\n");
+    puts("Solução Final -- Gulosa:\n");
     for(int i = 0; i < MAX_CITIES; i++)
     {
         printf("Cidade %i atendida pelo CD de id %i\n",cities[i].id,cds[solution.served_cities[i]].id);
     }
     puts("");
+    printf("Custo final: %i\n",solution.total_cost);
+    puts("");
+
+    puts("");
+    solution = local_search(solution, cds, cities, costs);
+    puts("Solução Final -- Gulosa + Busca Local:\n");
+    for(int i = 0; i < MAX_CITIES; i++)
+    {
+        printf("Cidade %i atendida pelo CD de id %i\n",cities[i].id,cds[solution.served_cities[i]].id);
+    }
+    puts("");
+    printf("Custo final: %i\n",solution.total_cost);
+    puts("");
+// ------------------------------------------------------------------------------------------------------------
 }
