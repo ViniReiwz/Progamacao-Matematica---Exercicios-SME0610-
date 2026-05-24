@@ -8,3 +8,4 @@ run:
 
 clean:
 	rm ./centros_distr
+	rm ./solutions.txt

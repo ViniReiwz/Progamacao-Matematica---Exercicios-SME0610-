@@ -235,25 +235,36 @@ int main()
 // ------------------------------------------------------------------------------------------------------------
 
 // Exibição dos resultados: -----------------------------------------------------------------------------------
+    
+    FILE* file = fopen("solutions.txt","w");
+
     SOLUTION solution = greedy_optimize(cds, cities, costs);
     puts("Solução Final -- Gulosa:\n");
+    fprintf(file,"Solução Final -- Gulosa:\n\n");
     for(int i = 0; i < MAX_CITIES; i++)
     {
         printf("Cidade %i atendida pelo CD de id %i\n",cities[i].id,cds[solution.served_cities[i]].id);
+        fprintf(file,"Cidade %i atendida pelo CD de id %i\n",cities[i].id,cds[solution.served_cities[i]].id);
     }
     puts("");
     printf("Custo final: %i\n",solution.total_cost);
+    fprintf(file,"\nCusto final: %i\n",solution.total_cost);
     puts("");
 
     puts("");
     solution = local_search(solution, cds, cities, costs);
     puts("Solução Final -- Gulosa + Busca Local:\n");
+    fprintf(file,"\nSolução Final -- Gulosa + Busca Local:\n\n");
     for(int i = 0; i < MAX_CITIES; i++)
     {
         printf("Cidade %i atendida pelo CD de id %i\n",cities[i].id,cds[solution.served_cities[i]].id);
+        fprintf(file,"Cidade %i atendida pelo CD de id %i\n",cities[i].id,cds[solution.served_cities[i]].id);
     }
     puts("");
     printf("Custo final: %i\n",solution.total_cost);
+    fprintf(file,"\nCusto final: %i\n",solution.total_cost);
     puts("");
+
+    fclose(file);
 // ------------------------------------------------------------------------------------------------------------
 }
