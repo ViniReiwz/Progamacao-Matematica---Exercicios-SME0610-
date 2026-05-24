@@ -1,7 +1,7 @@
 all: compile run
 
 compile:
-	gcc -g ./centros_distr.c -I ./ -o centros_distr
+	gcc -Wall -g ./centros_distr.c -I ./ -o centros_distr
 
 run:
 	./centros_distr
