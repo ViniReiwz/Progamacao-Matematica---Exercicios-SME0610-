@@ -11,6 +11,7 @@
         int id;         // Identificação única de cada CD
         int fix_cost;   // Custo fixo de instalação do CD
         int cap;        // Capacidade do CD
+        int builded;
     }CD;
 
     // Tipo que representa uma cidade
@@ -23,8 +24,7 @@
     // Tipo auxiliar para a construção de uma solução com a heurística
     typedef struct _sol
     {
-        CD* used_cds[MAX_CDS];              // Centros de distribuição já construídos
-        CITY* served_cities[MAX_CITIES];    // Cidades atendidas pelos CDs já construidos
+        int served_cities[MAX_CITIES];      // CDs que servem à i-ésima cidade
         int total_cost;                     // Custo total da otimização
     }SOLUTION;
 #endif

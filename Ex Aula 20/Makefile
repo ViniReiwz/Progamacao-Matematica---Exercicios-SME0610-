@@ -1,6 +1,7 @@
-all:
+all: compile run
+
+compile:
 	gcc ./centros_distr.c -I ./ -o centros_distr
-# 	make run
 
 run:
 	./centros_distr
