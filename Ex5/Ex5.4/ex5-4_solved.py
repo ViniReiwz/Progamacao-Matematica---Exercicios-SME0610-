@@ -29,7 +29,7 @@ x_list: list = []
 
 # Adicionando variáveis:
 for i in range(0,m):
-    x_list.append(model.addVar(name=f"x{i}", vtype="I",lb=0))   # m variáveis reais
+    x_list.append(model.addVar(name=f"x{i}", vtype="C",lb=0))   # m variáveis reais
 
 # Adicionando restrições:
 for i in range(0,n):
